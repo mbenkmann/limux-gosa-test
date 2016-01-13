@@ -1,0 +1,9 @@
+...
+HOSTNAME=systest1
+HOSTTYPE=i686
+IFS=$' \t\n'
+INSTANCE=
+LHMclientRelease=tramp/5.0.0something
+LHMdistributionBase=trusty
+LIMUX_ARCHITECTURE=i386
+...

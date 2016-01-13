@@ -370,6 +370,7 @@ func SystemTest(daemon string, is_gosasi bool) {
     siFail(true,false)
   } else {
     run_save_fai_log_tests()
+    run_postprocess_logfiles_tests()
     run_trigger_activate_new_tests()
     run_tftp_tests()
     run_new_foo_config_tests()
@@ -2488,6 +2489,63 @@ func run_foreign_job_updates_tests() {
   siFail(checkTags(x, "header,source,target,session_id?"),"")
 }
 
+func run_postprocess_logfiles_tests() {
+  t0 := time.Now().Unix()  
+
+  // default case 1
+  logfiledir := "testdata/var_log_fai/01:02:03:04:05:06/install_20151116_191910"
+  macaddress := "01:02:03:04:05:06"
+  message.Postprocess_logfiles(logfiledir, macaddress)
+  lastrunTime, _ := strconv.ParseInt(db.SystemGetState(macaddress, "FAIlastrunTime"), 10, 64)
+  check(db.SystemGetState(macaddress, "faiState"), "localboot")
+  check(db.SystemGetState(macaddress, "FAIlastrunClass"), "Modul_Standard _ADD_SOMETHING_SPECIAL :wanderer")
+  check(lastrunTime >= t0, true)
+  
+  // default case 2 (read from ldap2fai.log as fallback/workaround)
+  logfiledir = "testdata/var_log_fai/01:02:03:04:05:06/softupdate_20160108_150408"
+  macaddress = "01:02:03:04:05:06"
+  message.Postprocess_logfiles(logfiledir, macaddress)
+  lastrunTime, _ = strconv.ParseInt(db.SystemGetState(macaddress, "FAIlastrunTime"), 10, 64)
+  check(db.SystemGetState(macaddress, "faiState"), "localboot")
+  check(db.SystemGetState(macaddress, "FAIlastrunClass"), "Modul_Standard _ADD_SOMETHING_SPECIAL :wanderer")
+  check(lastrunTime >= t0, true)
+  
+  // default case 3 (more complicated release-string "tramp/5.0.0something")
+  logfiledir = "testdata/var_log_fai/01:02:03:04:05:06/install_20151116_231910"
+  macaddress = "01:02:03:04:05:06"
+  message.Postprocess_logfiles(logfiledir, macaddress)
+  lastrunTime, _ = strconv.ParseInt(db.SystemGetState(macaddress, "FAIlastrunTime"), 10, 64)
+  check(db.SystemGetState(macaddress, "faiState"), "localboot")
+  check(db.SystemGetState(macaddress, "FAIlastrunClass"), "Modul_Standard _ADD_SOMETHING_SPECIAL :tramp/5.0.0something")
+  check(lastrunTime >= t0, true)
+  
+  // default case 4 (more complicated release-string "tramp/5.0.0something" + fallback/workaround)
+  logfiledir = "testdata/var_log_fai/01:02:03:04:05:06/softupdate_20160108_230408"
+  macaddress = "01:02:03:04:05:06"
+  message.Postprocess_logfiles(logfiledir, macaddress)
+  lastrunTime, _ = strconv.ParseInt(db.SystemGetState(macaddress, "FAIlastrunTime"), 10, 64)
+  check(db.SystemGetState(macaddress, "faiState"), "localboot")
+  check(db.SystemGetState(macaddress, "FAIlastrunClass"), "Modul_Standard _ADD_SOMETHING_SPECIAL :tramp/5.0.0something")
+  check(lastrunTime >= t0, true)
+  
+  // now with invalid logfiledir
+  logfiledir = "testdata/var_log_fai/01:02:03:04:05:06/somethingNonExistent"
+  macaddress = "01:02:03:04:05:06"
+  message.Postprocess_logfiles(logfiledir, macaddress)
+  lastrunTime, _ = strconv.ParseInt(db.SystemGetState(macaddress, "FAIlastrunTime"), 10, 64)
+  check(db.SystemGetState(macaddress, "faiState"), "localboot")
+  check(db.SystemGetState(macaddress, "FAIlastrunClass"), "UNKNOWN_ORIGIN_FAI_CLASSES")
+  check(lastrunTime >= t0, true)
+
+  // now with invalid macaddress
+  logfiledir = "testdata/var_log_fai/01:02:03:04:05:06/install_20151116_191910"
+  macaddress = "01:42:42:42:42:06"
+  message.Postprocess_logfiles(logfiledir, macaddress)
+  check(db.SystemGetState(macaddress, "faiState"), "")
+  check(db.SystemGetState(macaddress, "FAIlastrunClass"), "")
+  check(db.SystemGetState(macaddress, "FAIlastrunTime"), "")
+}
+
 func check_multiple_requests_over_one_connection() {
   get_all_jobs := hash("xml(header(gosa_query_jobdb)source(GOSA)target(GOSA)where())")
   
@@ -2753,5 +2811,3 @@ func siFail(x interface{}, expected interface{}) bool {
   }
   return true
 }
-
-

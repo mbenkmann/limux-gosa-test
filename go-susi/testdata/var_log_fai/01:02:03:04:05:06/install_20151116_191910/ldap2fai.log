@@ -1,0 +1,7 @@
+...
+  + Hostname:           systest1
+  + FAIclass string:    Modul_Standard _ADD_SOMETHING_SPECIAL :wanderer
+  + Release:            wanderer
+  + Resolved classlist: ZAK_Basisclient _ADD_SOMETHING_SPECIAL
+  + FAI classlist:      DEFAULT ZAK_Basisclient _ADD_SOMETHING_SPECIAL systest1 LAST
+...

@@ -166,6 +166,8 @@ func clmsg_save_fai_log(buf *bytes.Buffer) {
       continue
     }
   }
+
+  postprocess_logfiles(logdir, macaddress)
 }
 
 // Executes program and reads from its standard output log files to transfer to
