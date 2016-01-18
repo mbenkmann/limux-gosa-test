@@ -22,6 +22,8 @@
     <attribute>gotoMode</attribute>
     <attribute>FAIstate</attribute>
     <attribute>FAIclass</attribute>
+    <attribute>FAIlastrunClass</attribute>
+    <attribute>FAIlastrunTime</attribute>
     <attribute>macAddress</attribute>
     <attribute>gotoLastUser</attribute>
     <attribute>ghInventoryNumber</attribute>
