@@ -2,12 +2,12 @@
  <tr>
   <td style='width:50%; '>
 
+   <table summary="{t}Boot parameters, LDAP server, Kernel Modules and Shares{/t}">
 
    <!--
     - Boot parameters 
     -->
-   <h3>{t}Boot parameters{/t}</h3>
-   <table summary="{t}Boot parameters{/t}">
+   <tr><td><h3>{t}Boot parameters{/t}</h3></td></tr>
     
     {if $fai_activated && $si_active && !$si_fai_action_failed}
     <tr>
@@ -73,9 +73,84 @@
 
      </td>
     </tr>
-   </table>
+
+
+   <!--
+    - Kernel modules
+    -->
+    <tr>
+     <td colspan="2">
+      <hr/><h3>{t}Kernel modules (format: name parameters){/t}</h3>
+      {render acl=$gotoModulesACL}
+       <select style="width:100%; height:100px;" name="modules_list[]" size=15 multiple 
+         title="{t}Add additional modules to load on startup{/t}">
+        {html_options values=$gotoModules output=$gotoModules}
+        <option disabled>&nbsp;</option>
+       </select>
+      {/render}
+
+      <br>
+      {render acl=$gotoModulesACL}
+       <input type='text' name="module" size=30 align=middle maxlength=30>
+      {/render}
+
+      {render acl=$gotoModulesACL}
+       <button type='submit' name='add_module'>
+      {msgPool type=addButton}</button>
+       &nbsp;
+      {/render}
+
+      {render acl=$gotoModulesACL}
+       <button type='submit' name='delete_module'>
+       {msgPool type=delButton}</button>
+      {/render}
+     </td>
+   </tr>
+
+
+   <!--
+    - Shares
+    -->
+    <tr>
+     <td colspan="2">
+      <hr/><h3><label for="gotoShare">{t}Shares{/t}</label></h3>
+    
+      {render acl=$gotoShareACL}
+       <select style="width:100%;height:100px;" name="gotoShare" multiple size=4 id="gotoShare">
+        {html_options values=$gotoShareKeys output=$gotoShares}
+        <option disabled>&nbsp;</option>
+       </select>
+      {/render}
+
+      <br>
    
+      {render acl=$gotoShareACL}
+       <select name="gotoShareSelection" size=1>
+        {html_options values=$gotoShareSelectionKeys output=$gotoShareSelections}
+        <option disabled>&nbsp;</option>
+       </select>
+      {/render}
+
+      {render acl=$gotoShareACL}
+       <input type="text" size=15 name="gotoShareMountPoint" value="{t}Mount point{/t}">
+      {/render}
+
+      {render acl=$gotoShareACL} 
+       <button type='submit' name='gotoShareAdd'>
+       {msgPool type=addButton}</button>
+      {/render}
+
+      {render acl=$gotoShareACL}
+       <button type='submit' name='gotoShareDel' {if $gotoSharesCount == 0} disabled {/if}>{t}Remove{/t}</button>
+      {/render}
+
+     </td>
+    </tr>
+
+   </table>
+
   </td>
+  <td>
 
 
    <!--
@@ -153,10 +228,12 @@
     </tr>
            
 
+   <!--
+    - assigned FAI classes
+    -->
     <tr>
      <td colspan="2"> 
-      
-       <b>{t}Assigned FAI classes{/t}</b>
+       <hr/><h3>{t}Assigned FAI classes{/t}</h3>
        
        {render acl=$FAIclassACL}
         {$FAIScriptlist}	
@@ -178,89 +255,15 @@
       
        {/if}
 
-      </td>
-     </tr>
-    </table>
+     </td>
+    </tr>
+   </table>
 
 {/if} <!-- FAI active-->
   </td>
  </tr>
 </table>
 
-
-<hr>
-
-<table summary="{t}Boot options{/t}" style="width:100%;">
- <tr>
-  <td style='width:50%; ' class='right-border'>
-
-
-   <!--
-    - Kernel modules
-    -->
-   <h3>{t}Kernel modules (format: name parameters){/t}</h3>
-   {render acl=$gotoModulesACL}
-    <select style="width:100%; height:100px;" name="modules_list[]" size=15 multiple 
-      title="{t}Add additional modules to load on startup{/t}">
-     {html_options values=$gotoModules output=$gotoModules}
-     <option disabled>&nbsp;</option>
-    </select>
-   {/render}
-
-   <br>
-   {render acl=$gotoModulesACL}
-    <input type='text' name="module" size=30 align=middle maxlength=30>
-   {/render}
-
-   {render acl=$gotoModulesACL}
-    <button type='submit' name='add_module'>
-   {msgPool type=addButton}</button>
-    &nbsp;
-   {/render}
-
-   {render acl=$gotoModulesACL}
-    <button type='submit' name='delete_module'>
-    {msgPool type=delButton}</button>
-   {/render}
-  </td>
-  <td>
-   <!--
-    - Shares
-    -->
-   <h3><label for="gotoShare">{t}Shares{/t}</label></h3>
-    
-   {render acl=$gotoShareACL}
-    <select style="width:100%;height:100px;" name="gotoShare" multiple size=4 id="gotoShare">
-     {html_options values=$gotoShareKeys output=$gotoShares}
-     <option disabled>&nbsp;</option>
-    </select>
-   {/render}
-
-   <br>
-   
-   {render acl=$gotoShareACL}
-    <select name="gotoShareSelection" size=1>
-     {html_options values=$gotoShareSelectionKeys output=$gotoShareSelections}
-     <option disabled>&nbsp;</option>
-    </select>
-   {/render}
-
-   {render acl=$gotoShareACL}
-    <input type="text" size=15 name="gotoShareMountPoint" value="{t}Mount point{/t}">
-   {/render}
-
-   {render acl=$gotoShareACL} 
-    <button type='submit' name='gotoShareAdd'>
-    {msgPool type=addButton}</button>
-   {/render}
-
-   {render acl=$gotoShareACL}
-    <button type='submit' name='gotoShareDel' {if $gotoSharesCount == 0} disabled {/if}>{t}Remove{/t}</button>
-   {/render}
-
-  </td>
- </tr>
-</table>
 <input name="WorkstationStarttabPosted" type="hidden" value="1">
 
 <script language="JavaScript" type="text/javascript">
