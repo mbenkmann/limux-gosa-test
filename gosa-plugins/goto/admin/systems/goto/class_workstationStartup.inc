@@ -48,9 +48,10 @@ class workstartup extends plugin
 
     var $view_logged        = FALSE;
 
-    /* FAI class selection */
-    var $InheritedFAIclass       = array();
-    var $InheritedFAIrelease     = "";
+    /* FAI class inherited from object group */
+    var $InheritedFAIclassValue  = "";      // inherited FAIclass as string "class1 ... classN :release"
+    var $InheritedFAIclass       = array(); // only the inherited classes as array(class1, ..., classN)
+    var $InheritedFAIrelease     = "";      // only the inherited release as string
     var $InheritedFAIdebianMirror= array("auto");
 
     var $CopyPasteVars    = array("gotoModules","gotoShares");
@@ -246,7 +247,8 @@ class workstartup extends plugin
                         break;
 
                     case 'FAIclass':
-                        $str = explode(":",$attrs[$name][0]);
+                        $this->InheritedFAIclassValue = $attrs[$name][0];
+                        $str = explode(":",$this->InheritedFAIclassValue);
                         $this->InheritedFAIclass    = explode(" ",trim($str[0]));
                         $this->InheritedFAIrelease  = trim($str[1]);
                         break;
@@ -631,9 +633,42 @@ class workstartup extends plugin
         }
 
         /* Values */
-        foreach(array("gotoBootKernel","gotoShare","FAIclasses","FAIclass","FAIdebianMirror","FAIrelease") as $val){
+        foreach(array("gotoBootKernel","gotoShare","FAIclasses","FAIclass","FAIdebianMirror","FAIrelease", "FAIstate") as $val){
             $smarty->assign($val, set_post($this->$val));
         }
+
+        /* FAIlastrunXXX values */
+        $oc = $this->attrs['objectClass'];
+        $lastrunShowInfo = (in_array("gotoWorkstation", $oc) || in_array("goServer", $oc));
+        $lastrunConfirmed = ""; // confirmed if FAIclass equals FAIlastrunClass
+        $lastrunClasses = array();
+        $lastrunRelease = _("Unknown");
+        $lastrunTime = _("Unknown");
+        if(isset($this->attrs['FAIlastrunClass'])) {
+            if(isset($this->attrs['FAIclass'])) {
+              $lastrunConfirmed = ($this->attrs['FAIclass'][0] == $this->attrs['FAIlastrunClass'][0]);
+            } else if($this->InheritedFAIclassValue) {
+              $lastrunConfirmed = ($this->InheritedFAIclassValue == $this->attrs['FAIlastrunClass'][0]);
+            }
+            $tmp = explode(" ",$this->attrs['FAIlastrunClass'][0]);
+            foreach($tmp as $class){
+                if( ":" == $class[0] ) {
+                    $lastrunRelease = trim(substr($class, 1));
+                }else{
+                    $lastrunClasses[$class] = $class;
+                }
+            }
+	}
+        if(isset($this->attrs['FAIlastrunTime'])) {
+            $epochTime = $this->attrs['FAIlastrunTime'][0];
+            $dt = new DateTime("@$epochTime");
+	    $lastrunTime = $dt->format('Y-m-d H:i:s');
+	}
+        $smarty->assign('FAIlastrunShowInfo',  $lastrunShowInfo);
+        $smarty->assign('FAIlastrunConfirmed', $lastrunConfirmed);
+        $smarty->assign('FAIlastrunClasses',   $lastrunClasses);
+        $smarty->assign('FAIlastrunRelease',   $lastrunRelease);
+        $smarty->assign('FAIlastrunTime',      $lastrunTime);
 
         $smarty->assign("fai_activated",$this->fai_activated);
 

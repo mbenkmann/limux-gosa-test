@@ -257,6 +257,62 @@
 
      </td>
     </tr>
+
+
+   <!--
+    - current installation status
+    -->
+    {if $FAIlastrunShowInfo}
+    <tr>
+     <td colspan="2">
+       <hr/><h3>{t}Current Installation Status{/t}</h3>
+       {render acl=$FAIclassACL}
+        <table>
+         <tr>
+          {if $FAIlastrunConfirmed}
+           <td><image src="images/true.png"/></td>
+           <td colspan="2"><b>{t}FAI-classes and release match current installation!{/t}</b></td>
+          {else}
+           <td ><image src="images/label-new.png"/></td>
+           <td colspan="2"><b>{t}FAI-classes or release differ from current installation!{/t}</b></td>
+          {/if}
+         </tr>
+         <tr>
+          <td/>
+          <td class="right-border">{t}Last Installation / Update Time{/t}&nbsp;</td>
+          <td>&nbsp;{$FAIlastrunTime}</td>
+         </tr>
+         <tr>
+          <td/>
+          <td class="right-border">{t}Installed Release{/t}</td>
+          <td>&nbsp;{$FAIlastrunRelease}</td>
+         </tr>
+         <tr>
+          <td/>
+          <td class="right-border">{t}Installed FAI-Classes{/t}</td>
+          <td>
+           {if count($FAIlastrunClasses) == 0}
+             &nbsp;{t}Unknown{/t}
+           {else}
+             <ul class="treeList" style="margin-left:1em">
+              {foreach from=$FAIlastrunClasses item=val key=key}
+               <li>{$val}</li>
+              {/foreach}
+             </ul>
+           {/if}
+          </td>
+         </tr>
+         <tr>
+          <td/>
+          <td class="right-border">{t}FAI state{/t}</td>
+          <td>&nbsp;{$FAIstate}</td>
+         </tr>
+        </table>
+       {/render}
+     </td>
+    </tr>
+    {/if}
+
    </table>
 
 {/if} <!-- FAI active-->
