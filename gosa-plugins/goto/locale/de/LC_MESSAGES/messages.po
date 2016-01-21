@@ -4505,3 +4505,41 @@ msgstr "Automatisch auswählen"
 #: admin/applications/generic.tpl:91
 msgid "Specify a path to an icon or an XDG icon specification filename instead"
 msgstr "Alternativ Dateipfad des Icons oder XDG Icon-Spec kompatibler Dateiname"
+
+#: admin/systems/goto/class_workstationStartup.inc:645:
+#: admin/systems/goto/class_workstationStartup.inc:646:
+#: admin/systems/goto/workstationStartup.tpl:295:
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: admin/systems/goto/workstationStartup.tpl:5:
+msgid "Boot parameters, LDAP server, Kernel Modules and Shares"
+msgstr "Boot Parameter, LDAP-Server, Kernel-Module und Freigaben"
+
+#: admin/systems/goto/workstationStartup.tpl:268:
+msgid "Current Installation Status"
+msgstr "IST-Stand der Installation"
+
+#: admin/systems/goto/workstationStartup.tpl:274:
+msgid "FAI-classes and release match current installation!"
+msgstr "FAI-Klassen und Release stimmen mit aktueller Installation überein!"
+
+#: admin/systems/goto/workstationStartup.tpl:277:
+msgid "FAI-classes or release differ from current installation!"
+msgstr "FAI-Klassen oder Release weichen von aktueller Installation ab!"
+
+#: admin/systems/goto/workstationStartup.tpl:282:
+msgid "Last Installation / Update Time"
+msgstr "Datum der letzten Installation / Aktualisierung"
+
+#: admin/systems/goto/workstationStartup.tpl:287:
+msgid "Installed Release"
+msgstr "Installiertes Release"
+
+#: admin/systems/goto/workstationStartup.tpl:292:
+msgid "Installed FAI-Classes"
+msgstr "Installierte FAI-Klassen"
+
+#: admin/systems/goto/workstationStartup.tpl:307:
+msgid "FAI state"
+msgstr "FAI state"
