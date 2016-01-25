@@ -27,8 +27,8 @@ import (
          "time"
          "strconv"
          
-         "../util"
          "../db"
+         "github.com/mbenkmann/golib/util"
        )
 
 var originFAIclassRegexp = regexp.MustCompile(`^\s*LHMoriginFAIclass\s*=\s*'([^']+)'\s*$`)
