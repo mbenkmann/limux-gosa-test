@@ -2534,7 +2534,7 @@ func run_postprocess_logfiles_tests() {
   message.Postprocess_logfiles(logfiledir, macaddress)
   lastrunTime, _ = strconv.ParseInt(db.SystemGetState(macaddress, "FAIlastrunTime"), 10, 64)
   check(db.SystemGetState(macaddress, "faiState"), "localboot")
-  check(db.SystemGetState(macaddress, "FAIlastrunClass"), "UNKNOWN_ORIGIN_FAI_CLASSES")
+  check(db.SystemGetState(macaddress, "FAIlastrunClass"), "")
   check(lastrunTime >= t0, true)
 
   // now with invalid macaddress

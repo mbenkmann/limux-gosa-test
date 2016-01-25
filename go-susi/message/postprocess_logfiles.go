@@ -39,50 +39,54 @@ func Postprocess_logfiles(logdir string, macaddress string) {
   postprocess_logfiles(logdir, macaddress)
 }
 
-// Performs a postprocessing on logfiles that the server 
-// recived in clmsg_save_fai_log.
+// Performs a postprocessing on logfiles that the server
+// recived in clmsg_save_fai_log. We currently use this method
+// to update the LDAP attributes FAIlastrunClass and FAIlastrunTime
+// with values that we did extract from submitted logfiles.
+//
 //  logdir: path of the directory that contains the logfiles
 //  macaddress: macaddress of the client that produced the logfiles
+//
 func postprocess_logfiles(logdir string, macaddress string) {
 
-  // we do the following steps only in case of successfull FAI runs.
-  // We identify a successfull FAI run if FAIstate doesn't contain
-  // an error message. But we can be more specific: The FAIstate for
-  // a successfull FAI run could either be softupdate, install or
-  // localboot (if the in parallel running job "set progress 100"
-  // was already processed). Note, that the caller (clmsg_save_fai_log)
-  // just did start this "set progress 100" job in parallel. 
-  // This job sets faistate to "localboot".
-  faistate := db.SystemGetState(macaddress, "FAIstate")
-  if !(strings.HasPrefix(faistate, "softupdat") || strings.HasPrefix(faistate, "install") || faistate == "localboot") {
-    util.Log(1, "DEBUG! nothing to do in postprocess_logfiles for faistate '%v'", faistate)
-    return
-  }
-
+  // faiLastrunTime should be updated with the epoch timestamp of now.
+  // This is done for successfull and failed FAI runs.
   faiLastrunTime := strconv.FormatInt(time.Now().Unix(), 10)
 
-  // Extract the varialbe "LHMoriginFAIclass" from variables.log:
+  // Fill faiLastrunClass with the value of FAIclass that was used
+  // for this FAI run. This is only done if the FAI run was successfull.
+  // In case of an error, we leafe faiLastrunClass empty, so that
+  // it gets removed in the end.
+  //
+  // To retrieve the value of FAIclass that was used for this FAI run,
+  // we extract the varialbe "LHMoriginFAIclass" from variables.log:
   // Ldap2fai has created this variable for us. It holds the origin
   // content of the FAIclass before the fai-classes were expanded
   // for FAI. FAI itself only uses the expanded list of fai-classes
-  // and doesn't need or read LHMoriginFAIclass. Ldap2fai exports
-  // the variable solely for the purpose to be read here.
-  dat, err := ioutil.ReadFile(path.Join(logdir, "variables.log"))
+  // and doesn't need or read LHMoriginFAIclass.
+  //
+  // A successfull FAI run is identified by the fact, that FAIstate
+  // doesn't contain an error message. A successfull FAI run is given,
+  // if FAIstate is either "softupdate", "install" or "localboot".
+  // Note, that the caller (clmsg_save_fai_log) just did start a
+  // "set progress 100" job in parallel and this job could have set
+  // faistate to "localboot".
   faiLastrunClass := ""
-  if err == nil {
-    for _,line := range strings.Split(string(dat), "\n") {
-      res := originFAIclassRegexp.FindStringSubmatch(line)
-      if(len(res) > 1) {
-        faiLastrunClass = res[1]
-        break
-      }
-    }
-  } else {
-    util.Log(1, "ERROR! could not read logfile variables.log: %v", err)
-  }
+  faistate := db.SystemGetState(macaddress, "FAIstate")
+  if (faistate == "softupdate" || faistate == "install" || faistate == "localboot") {
 
-  if(faiLastrunClass == "") {
-    faiLastrunClass = "UNKNOWN_ORIGIN_FAI_CLASSES"
+    dat, err := ioutil.ReadFile(path.Join(logdir, "variables.log"))
+    if err == nil {
+      for _,line := range strings.Split(string(dat), "\n") {
+        res := originFAIclassRegexp.FindStringSubmatch(line)
+        if(len(res) > 1) {
+          faiLastrunClass = res[1]
+          break
+        }
+      }
+    } else {
+      util.Log(1, "ERROR! could not read logfile variables.log: %v", err)
+    }
 
     // START Workaround:
     // The above creation of the LHMoriginFAIclass variable requires
@@ -95,23 +99,30 @@ func postprocess_logfiles(logdir string, macaddress string) {
     // we are parsing a log message from ldap2fai that was never intended
     // to be processed this way.
     // The workaround could be removed if wanderer is out there everywhere.
-    dat, err = ioutil.ReadFile(path.Join(logdir, "ldap2fai.log"))
-    if err == nil {
-      for _,line := range strings.Split(string(dat), "\n") {
-        res := faiClassStringRegexp.FindStringSubmatch(line)
-        if(len(res) > 1) {
-          faiLastrunClass = res[1]
-          break
+    if(faiLastrunClass == "") {
+      dat, err = ioutil.ReadFile(path.Join(logdir, "ldap2fai.log"))
+      if err == nil {
+        for _,line := range strings.Split(string(dat), "\n") {
+          res := faiClassStringRegexp.FindStringSubmatch(line)
+          if(len(res) > 1) {
+            faiLastrunClass = res[1]
+            break
+          }
         }
+      } else {
+        util.Log(1, "ERROR! could not read (fallback) logfile ldap2fai.log: %v", err)
       }
-    } else {
-      util.Log(1, "ERROR! could not read (fallback) logfile ldap2fai.log: %v", err)
     }
     // END Workaround
+
   }
   
   // update database
-  util.Log(2, "INFO: setting FAIlastrunClass='%v' and FAIlastrunTime='%v'", faiLastrunClass, faiLastrunTime)
-  db.SystemSetState(macaddress, "FAIlastrunClass", faiLastrunClass)
+  util.Log(1, "INFO: setting FAIlastrunClass='%v' and FAIlastrunTime='%v'", faiLastrunClass, faiLastrunTime)
+  if(faiLastrunClass != "") {
+    db.SystemSetState(macaddress, "FAIlastrunClass", faiLastrunClass)
+  } else {
+    db.SystemSetStateMulti(macaddress, "FAIlastrunClass", []string{}) // removes FAIlastrunClass
+  }
   db.SystemSetState(macaddress, "FAIlastrunTime", faiLastrunTime)
 }
