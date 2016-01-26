@@ -1717,6 +1717,7 @@ class systemManagement extends management
 
         if($lastrunTime[0] > 0){
           $dt = new DateTime("@$lastrunTime[0]");
+          $dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
           $mouseoverText .= "&#13;".sprintf(_("Last Installation / Update Time: %s"), $dt->format('Y-m-d H:i:s'));
         }
 

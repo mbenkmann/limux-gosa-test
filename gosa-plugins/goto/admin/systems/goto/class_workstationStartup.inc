@@ -662,6 +662,7 @@ class workstartup extends plugin
         if(isset($this->attrs['FAIlastrunTime'])) {
             $epochTime = $this->attrs['FAIlastrunTime'][0];
             $dt = new DateTime("@$epochTime");
+            $dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
 	    $lastrunTime = $dt->format('Y-m-d H:i:s');
 	}
         $smarty->assign('FAIlastrunShowInfo',  $lastrunShowInfo);
