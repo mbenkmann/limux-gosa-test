@@ -276,9 +276,6 @@ if (!version_compare(phpversion(),"5.2.0",">=")){
   exit();
 }
 
-/* Set timezone */
-date_default_timezone_set("GMT");
-
 /* Get base dir for reference */
 $BASE_DIR= dirname(dirname(__FILE__));
 $ROOT_DIR= $BASE_DIR."/html";
