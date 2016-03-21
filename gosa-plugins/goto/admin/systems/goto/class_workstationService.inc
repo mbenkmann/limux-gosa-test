@@ -177,9 +177,10 @@ class workservice extends plugin
         }
 
         if(preg_match("/\+/",$this->gotoXHsync)){
-          $this->AutoSync = true;
           $this->gotoXHsync = preg_replace("/\+/","-",$this->gotoXHsync);
           $this->gotoXVsync = preg_replace("/\+/","-",$this->gotoXVsync);
+        } else {
+          $this->AutoSync = false;
         }
 
         if (isset($this->attrs['gotoXHsync']) && isset($this->attrs['gotoXVsync'])) {
@@ -214,12 +215,9 @@ class workservice extends plugin
         /* Load hardware list */
         $this->loadHardwareList();
 
-        if (preg_match("/\+/",$this->gotoXHsync)){
+        if (empty($this->gotoXHsync)){
           $this->AutoSync = true;
-          $this->gotoXHsync = preg_replace("/\+/","-",$this->gotoXHsync);
-          $this->gotoXVsync = preg_replace("/\+/","-",$this->gotoXVsync);
         }
-
 
         if($this->is_account && !$this->view_logged){
             $this->view_logged = TRUE;
@@ -670,18 +668,6 @@ class workservice extends plugin
                     }
                 }
             }
-        }
-    }
-
-
-    function PrepareForCopyPaste($source)
-    {
-        plugin::PrepareForCopyPaste($source);
-
-        if(preg_match("/\+/",$this->gotoXHsync)){
-            $this->AutoSync = true;
-            $this->gotoXHsync = preg_replace("/\+/","-",$this->gotoXHsync);
-            $this->gotoXVsync = preg_replace("/\+/","-",$this->gotoXVsync);
         }
     }
 }
