@@ -1666,7 +1666,7 @@ class systemManagement extends management
     }
 
 
-    static function systemRelease($a,$b,$c,$objectclasses= null,$ogroup,$ogroup_FAIclass,$class= null)
+    static function systemRelease($a,$b,$c,$objectclasses= null,$ogroup,$ogroup_FAIclass,$class= null,$lastrunClass= null,$lastrunTime= null)
     {
         global $config;
         $render_ret = '&nbsp;';
@@ -1680,23 +1680,50 @@ class systemManagement extends management
         if (!in_array_ics("FAIobject", $objectclasses))
             goto sr_bailout;
 
+
+        $release = "";
+        $confirmed = "";
+        $ogroupImage = "";
+
         // If we've an own fai class, just use this
         if ($class && is_array($class)) {
             foreach (explode(' ', $class[0]) as $element) {
                 if ($element != "" && $element[0] == ":") {
-                    $sort_ret = mb_substr($element, 1);
-                    $render_ret = $sort_ret."&nbsp;".image('images/empty.png');
-                    goto sr_bailout;
+                    $confirmed = ($class[0] == $lastrunClass[0]);
+                    $release = mb_substr($element, 1);
+                    $ogroupImage = image('images/empty.png');
+                    break;
                 }
             }
         }
 
-        if(!empty($ogroup)) {
-            $sort_ret = preg_replace("/^.*:/","",$ogroup_FAIclass);
+        // or use FAIclass derived from object group
+        if(empty($release) && !empty($ogroup)) {
+            $confirmed = ($ogroup_FAIclass == $lastrunClass[0]);
+            $release = preg_replace("/^.*:/","",$ogroup_FAIclass);
             $sys = sprintf(_("Inherited from %s"),$ogroup);
-            $render_ret = $sort_ret."&nbsp;".image('plugins/ogroups/images/ogroup.png', "", $sys);
-            goto sr_bailout;
+            $ogroupImage = image('plugins/ogroups/images/ogroup.png', "", $sys);
         }
+
+        $sort_ret = $release.":".$confirmed;
+
+        if($confirmed) {
+          $mouseoverText = _("FAI-classes and release match current installation!");
+          $confirmedImage = image('images/true.png');
+        } else {
+          $mouseoverText = _("FAI-classes or release differ from current installation!");
+          $confirmedImage = image('images/label-new.png');
+        }
+
+        if($lastrunTime[0] > 0){
+          $dt = new DateTime("@$lastrunTime[0]");
+          $dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
+          $mouseoverText .= "&#13;".sprintf(_("Last Installation / Update Time: %s"), $dt->format('Y-m-d H:i:s'));
+        }
+
+        $render_ret = "<div style='display:inline-block;float:left;'>".$release."&nbsp;".$ogroupImage."</div>";
+        $render_ret .= "<div style='display:inline-block;float:right;' title='".$mouseoverText."'>".$confirmedImage."</div>";
+        $render_ret .= "<div style='display:inline-block;'> </div>"; // filler in the middle
 
     sr_bailout:
         return array( $render_ret, $sort_ret );

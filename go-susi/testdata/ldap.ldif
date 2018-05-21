@@ -210,6 +210,8 @@ gotoXMouseType: auto
 gotoXMouseport: /dev/input/mice
 gotoLdapServer: 1:localhost:ldap://127.0.0.1:20088/o=go-susi,c=de
 FAIstate: localboot
+FAIclass: ZAK_Basisclient _ADD_SOMETHING_SPECIAL systest1 :wanderer
+FAIlastrunclass: ZAK_Basisclient systest1 :tramp
 ghScsiDev: HL-DT-ST DVD-RAM GH60N
 ghIdeDev: ST3160318AS
 ghNetNic: Intel 82567LM-3 Gigabit Network Connection

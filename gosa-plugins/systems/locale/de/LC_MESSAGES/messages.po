@@ -939,3 +939,15 @@ msgstr "Kann Dienst-Status nicht aktualisieren!"
 
 #~ msgid "System analysis"
 #~ msgstr "Systemanalyse"
+
+#: admin/systems/class_systemManagement.inc:1711:
+msgid "FAI-classes and release match current installation!"
+msgstr "FAI-Klassen und Release stimmen mit aktueller Installation überein!"
+
+#: admin/systems/class_systemManagement.inc:1714:
+msgid "FAI-classes or release differ from current installation!"
+msgstr "FAI-Klassen oder Release weichen von aktueller Installation ab!"
+
+#: admin/systems/class_systemManagement.inc:1720:
+msgid "Last Installation / Update Time: %s"
+msgstr "Datum der letzten Installation / Aktualisierung: %s"

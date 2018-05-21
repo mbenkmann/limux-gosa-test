@@ -210,7 +210,7 @@
       <label>Release</label>
       <sortAttribute>sort,cn</sortAttribute>
       <sortType>string,string</sortType>
-      <value>%{filter:systemRelease(row,dn,"%s",objectClass,ogroup,ogroup_FAIclass,FAIclass)}</value>
+      <value>%{filter:systemRelease(row,dn,"%s",objectClass,ogroup,ogroup_FAIclass,FAIclass,FAIlastrunClass,FAIlastrunTime)}</value>
       <export>true</export>
     </column>
 

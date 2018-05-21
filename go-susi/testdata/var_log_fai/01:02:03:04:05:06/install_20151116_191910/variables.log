@@ -1,0 +1,10 @@
+...
+HOSTNAME=systest1
+HOSTTYPE=i686
+IFS=$' \t\n'
+INSTANCE=
+LHMclientRelease=wanderer
+LHMdistributionBase=trusty
+LHMoriginFAIclass='Modul_Standard _ADD_SOMETHING_SPECIAL :wanderer'
+LIMUX_ARCHITECTURE=i386
+...
